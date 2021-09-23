@@ -29,22 +29,43 @@ class MainActivity : AppCompatActivity() {
         networkViewModel = ViewModelProviders.of(this).get(NetworkViewModel::class.java)
         findViewById<Button>(R.id.btnCheckInternet).setOnClickListener {
             showProgress(this)
-            networkViewModel!!.registerNetwork(this)
-            networkViewModel!!.Stat!!.observe(this, Observer {
-                if (it == true) {
-                    if (networkViewModel!!.networkStat!!.value == true) {
-                        closeProgress()
-                        Toast.makeText(this@MainActivity, "Network Available", Toast.LENGTH_LONG)
-                            .show()
-                        networkViewModel!!.Stat!!.removeObservers(this)
-                    } else {
-                        closeProgress()
-                        Toast.makeText(this@MainActivity, "Network UnAvailable", Toast.LENGTH_LONG)
-                            .show()
-                        networkViewModel!!.Stat!!.removeObservers(this)
+            if (MyReachability.getConnectivityStatus(this) != 0 && MyReachability.getConnectivityStatusString(
+                    this
+                ) != MyReachability.NOT_CONNECT
+            ) {
+                networkViewModel!!.registerNetwork(this)
+                networkViewModel!!.Stat!!.observe(this, Observer {
+                    if (it == true) {
+                        if (networkViewModel!!.networkStat!!.value == true) {
+                            closeProgress()
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Network Available",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
+                            networkViewModel!!.Stat!!.removeObservers(this)
+                        } else {
+                            closeProgress()
+                            Toast.makeText(
+                                this@MainActivity,
+                                "Network UnAvailable",
+                                Toast.LENGTH_LONG
+                            )
+                                .show()
+                            networkViewModel!!.Stat!!.removeObservers(this)
+                        }
                     }
-                }
-            })
+                })
+            }else{
+                closeProgress()
+                Toast.makeText(
+                    this@MainActivity,
+                    "Network UnAvailable",
+                    Toast.LENGTH_LONG
+                )
+                    .show()
+            }
         }
     }
 
